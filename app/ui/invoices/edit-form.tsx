@@ -10,6 +10,10 @@ import {
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 
+import { updateInvoice } from '@/app/lib/actions';//ez is kell az adatok szerkesztéséhez
+import { useFormState } from 'react-dom';
+// Passing an id as argument won't work :<form action={updateInvoice(id)}></form>
+//Instead, you can pass id to the Server Action using JS bind This will ensure that any values passed to the Server Action are encoded.
 export default function EditInvoiceForm({
   invoice,
   customers,
@@ -17,8 +21,12 @@ export default function EditInvoiceForm({
   invoice: InvoiceForm;
   customers: CustomerField[];
 }) {
+  const initialState = { message: null, errors: {} };
+  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+  const [state, dispatch] = useFormState(updateInvoiceWithId, initialState);
   return (
-    <form>
+    <form action={dispatch}>
+       {/* <input type="hidden" name="id" value={invoice.id} /> //ez is működik de így a forráskódban látszanak az id-k az meg nem biztonságos*/}
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
